@@ -1,0 +1,45 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div>热水
+            <input type="text" id="hot"/>
+        </div>
+        <div>冷水
+            <input type="text" id="cold"/>
+        </div>
+        <div>想要的温度
+            <input type="text" id="want"/>
+        </div>
+        <div>
+            <input type="button" id="calculate" value="计算"/>
+        </div>
+        <div>结果：</div>
+        <div id="result"></div>
+    </body>
+    <script>
+        calculate.onclick = function(){
+            var wd1 = hot.value;
+            var wd2 = cold.value;
+            var wd3 = want.value;
+            var res = (wd3-wd2)/(wd1-wd3);
+            var str = ''
+            if (res < 0){
+                str = '不可能'
+            }
+            else if (res == 0){
+                str = '不需要热水，直接用冷水'
+            }
+            else if (res == Infinity){
+                str = '不需要冷水，直接用热水'
+            }
+            else if (!res){
+                str = '不需要兑水'
+            }
+            else {
+                str = `热水和冷水的比例：${res}`
+            }
+            result.innerHTML = str;
+        }
+    </script>
+</html>

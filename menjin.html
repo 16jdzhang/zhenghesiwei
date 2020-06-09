@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+            #info {
+                position: absolute;
+                top: 10px;
+                width: 100%;
+                z-index: 100;
+                display:block;
+                color: white;
+            }
+		</style>
+    </head>
+    <div id="info">
+        正常体温范围：<input id="t1" type="text" value="36.5"/>度 至 <input id="t2" type="text" value="37.7"/>度。
+        <br/>
+        模拟体温：<input id="t3" type="text"/>度。
+        <input type="button" value="模拟运行" id="btn" onclick="button_click();"/>
+        <p id="err"></p>
+    </div>
+	<body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+		<script>
+			// var scene = new THREE.Scene();
+			// var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			// var renderer = new THREE.WebGLRenderer();
+			// renderer.setSize( window.innerWidth, window.innerHeight );
+			// document.body.appendChild( renderer.domElement );
+
+			// var geometry = new THREE.BoxGeometry();
+			// // var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            // var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./background.png') } );
+			// var cube = new THREE.Mesh( geometry, material );
+			// scene.add( cube );
+
+			// camera.position.z = 5;
+
+			// var animate = function () {
+			// 	requestAnimationFrame( animate );
+
+			// 	cube.rotation.x += 0.01;
+			// 	cube.rotation.y += 0.01;
+
+			// 	renderer.render( scene, camera );
+			// };
+
+			// animate();
+            var camera, scene, renderer;
+			var mesh, mesh2, mesh3;
+
+			init();
+			animate();
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.z = 400;
+
+				scene = new THREE.Scene();
+
+				var texture = new THREE.TextureLoader().load( './background2.png' );
+
+				var geometry = new THREE.PlaneGeometry( 700, 400, 32 );
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+
+                var g2 = new THREE.Geometry();
+                g2.vertices.push(
+                    new THREE.Vector3( 0,  15, 0 ),
+                    new THREE.Vector3( 0, -15, 0 ),
+                    new THREE.Vector3(  120, 0, 0 )
+                );
+                g2.faces.push( new THREE.Face3( 0, 1, 2 ) );
+                g2.computeBoundingSphere();
+                mesh2 = new THREE.Mesh( g2, new THREE.MeshBasicMaterial( { color: 0x00ff00 } ) );
+                scene.add( mesh2 );
+                mesh2.position.z = 1;
+                mesh2.position.x = 102;
+                mesh2.position.y = 115;
+
+                
+                var g3 = new THREE.Geometry();
+                g3.vertices.push(
+                    new THREE.Vector3( 0,  5, 0 ),
+                    new THREE.Vector3( 0, -5, 0 ),
+                    new THREE.Vector3(  -40, 0, 0 )
+                );
+                g3.faces.push( new THREE.Face3( 2, 1, 0 ) );
+                g3.computeBoundingSphere();
+                mesh3 = new THREE.Mesh( g3, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+                scene.add( mesh3 );
+                mesh3.position.z = 1;
+                mesh3.position.x = 195;
+                mesh3.position.y = -45;
+                // mesh3.rotation.z = Math.PI;
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+                window.addEventListener('keydown',function(e){
+                    var mesh2 = mesh3;
+                    // if (e.key == 'w'){
+                    //     mesh2.position.y += 1
+                    // }
+                    // if (e.key == 's'){
+                    //     mesh2.position.y -= 1
+                    // }
+                    // if (e.key == 'a'){
+                    //     mesh2.position.x -= 1
+                    // }
+                    // if (e.key == 'd'){
+                    //     mesh2.position.x += 1
+                    // }
+                    // console.log(mesh2.position.x, mesh2.position.y)
+
+                    if (e.key == 'w'){
+                        mesh2.rotation.z += 0.01
+                    }
+                    if (e.key == 's'){
+                        mesh2.rotation.z -= 0.01
+                    }
+                    console.log(mesh2.rotation.z)
+                });
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+            var animate_inner = null;
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+                if(animate_inner){animate_inner();}
+
+				renderer.render( scene, camera );
+
+			}
+
+            function button_click(){
+                btn.disabled = true;
+                // btn.disabled = false;
+                var getvalue = function(t){
+                    var v = parseFloat(t.value);
+                    if (isNaN(v)){
+                        throw '输入的不是数字';
+                    }
+                    return v;
+                }
+                var tp1, tp2, tp3;
+                try{
+                    tp1 = getvalue(t1);
+                    tp2 = getvalue(t2);
+                    tp3 = getvalue(t3);
+                }
+                catch(e){
+                    err.innerHTML = e.toString();
+                    btn.disabled = false;
+                    setTimeout(()=>{
+                        err.innerHTML = '';
+                    }, 3000);
+                }
+                var r = 0;
+                if (tp3<35){
+                    r = 0;
+                }else if (tp3>42){
+                    r = 1;
+                }else{
+                    r = (tp3-35)/(42-35);
+                }
+                mesh3.rotation.z = -r*Math.PI;
+                if (!(tp1<=tp3 && tp3<=tp2)){
+                    err.innerHTML = '体温不正常，拒绝通行。';
+                    setTimeout(()=>{
+                        mesh3.rotation.z = 0;
+                        err.innerHTML = '';
+                        btn.disabled = false;
+                    }, 3000);
+                }
+                else{
+                    var open, close;
+                    var delta = 0.01;
+                    err.innerHTML = '运行中。';
+                    open = function(){
+                        mesh2.rotation.z += delta;
+                        if (mesh2.rotation.z > Math.PI/2){
+                            animate_inner = null;
+                            setTimeout(()=>{
+                                animate_inner = close;
+                            }, 6000);
+                        }
+                    }
+                    close = function(){
+                        mesh2.rotation.z -= delta;
+                        if (mesh2.rotation.z < 0){
+                            mesh2.rotation.z = 0
+                            animate_inner = null;
+                            mesh3.rotation.z = 0;
+                            err.innerHTML = '';
+                            btn.disabled = false;
+                        }
+                    }
+                    animate_inner = open;
+                }
+            }
+		</script>
+	</body>
+</html>
