@@ -1,0 +1,15 @@
+
+// the setup function runs once when you press reset or power the board
+void setup() {
+  pinMode(9, OUTPUT);
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  float tempature = analogRead(A0)/255*(42-35)+35;
+  if (36.5 < tempature && tempature<37.7){
+    digitalWrite(9, HIGH);
+    delay(10000);
+    digitalWrite(9, LOW);
+  }
+}
