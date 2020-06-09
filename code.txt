@@ -6,10 +6,15 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
+  //获取温度
   float tempature = analogRead(A0)/255*(42-35)+35;
+  //如果体温正常
   if (36.5 < tempature && tempature<37.7){
+    //旋转
     digitalWrite(9, HIGH);
+    //等待通过
     delay(10000);
+    //关门
     digitalWrite(9, LOW);
   }
 }
